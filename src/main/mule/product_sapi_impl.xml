@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<flow name="get:\products:product_sapi-config" doc:id="73860684-9a57-41a4-aff8-9380978b65b9" >
+		<db:select doc:name="Select" doc:id="a2b0ef6d-52be-4d1f-97af-45396fbfbd3b" config-ref="Database_product_connection">
+			<db:sql ><![CDATA[select product_id, product_name, product_amt from bidding.product_master]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="acf44acf-1c9a-42f4-80cf-e5c2513414ff" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map (
+	{
+		product_id: $.product_id,
+		product_name: $.product_name,
+		product_amt: $.product_amt	
+	}
+)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="post:\products:application\json:product_sapi-config" doc:id="9d92cc8e-f3ce-4005-8538-9b32feb0101f" >
+		<db:insert doc:name="Insert" doc:id="218d906c-d2ed-4ab6-ac83-1af6fb257a04" config-ref="Database_product_connection">
+			<db:sql><![CDATA[INSERT INTO `bidding`.`product_master` (`product_id`, `product_name`, `product_amt`) VALUES (:product_id, :product_name, :product_amt);]]></db:sql>
+			<db:input-parameters><![CDATA[#[{
+	product_id:payload.product_id,
+	product_name: payload.product_name,
+	product_amt: payload.product_amt
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="c2aa126c-de30-4aab-a0a5-853ba2b75aa9" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  product_id: 0,
+  product_name: "MyProduct1",
+  product_amt: 100
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="get:\products\(product_id):product_sapi-config" doc:id="0d735501-0cd4-4b9f-a674-c69ef3992dea" >
+		<db:select doc:name="Select product" doc:id="a971044b-c70e-4fe4-b14e-e9a7b7e8a56a" config-ref="Database_product_connection">
+			<db:sql><![CDATA[select product_id, product_name, product_amt from bidding.product_master where product_id =:product_id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	product_id: attributes.uriParams.product_id
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="87ef179f-94db-4f30-8d71-a343e755a805" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
