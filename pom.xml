@@ -60,13 +60,13 @@
 			<version>1.5.1</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>cd52ca13-4490-43ed-a009-e2fe96d5f2fa</groupId>
 			<artifactId>product_sapi</artifactId>
 			<version>1.0.1</version>
 			<classifier>raml</classifier>
 			<type>zip</type>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>org.mule.connectors</groupId>
 			<artifactId>mule-db-connector</artifactId>
