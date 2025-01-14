@@ -7,6 +7,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
 	<flow name="get:\products:product_sapi-config" doc:id="73860684-9a57-41a4-aff8-9380978b65b9" >
+		<logger level="INFO" doc:name="Start" doc:id="04deaaa6-f61a-4f5a-87fc-daca75ff98d2" message="Start - Get Products"/>
 		<db:select doc:name="Select" doc:id="a2b0ef6d-52be-4d1f-97af-45396fbfbd3b" config-ref="Database_product_connection">
 			<db:sql ><![CDATA[select product_id, product_name, product_amt from bidding.product_master]]></db:sql>
 		</db:select>
@@ -24,8 +25,10 @@ payload map (
 )]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<logger level="INFO" doc:name="End" doc:id="ae691aec-a7c7-402c-85b1-15dbb909d205" message="End - Get Products"/>
 	</flow>
 	<flow name="post:\products:application\json:product_sapi-config" doc:id="9d92cc8e-f3ce-4005-8538-9b32feb0101f" >
+		<logger level="INFO" doc:name="Start" doc:id="46d284e6-9468-4edd-8378-bc8940904fca" message="Start - Post products"/>
 		<db:insert doc:name="Insert" doc:id="218d906c-d2ed-4ab6-ac83-1af6fb257a04" config-ref="Database_product_connection">
 			<db:sql><![CDATA[INSERT INTO `bidding`.`product_master` (`product_id`, `product_name`, `product_amt`) VALUES (:product_id, :product_name, :product_amt);]]></db:sql>
 			<db:input-parameters><![CDATA[#[{
@@ -46,8 +49,10 @@ output application/json
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<logger level="INFO" doc:name="End" doc:id="52c880f5-3345-42e2-a521-c8ee7e194244" message="End - Post products"/>
 	</flow>
 	<flow name="get:\products\(product_id):product_sapi-config" doc:id="0d735501-0cd4-4b9f-a674-c69ef3992dea" >
+		<logger level="INFO" doc:name="Start" doc:id="571e1762-dcb2-4044-bbf7-68ff5907b4e7" message="Start - Get Products productId"/>
 		<db:select doc:name="Select product" doc:id="a971044b-c70e-4fe4-b14e-e9a7b7e8a56a" config-ref="Database_product_connection">
 			<db:sql><![CDATA[select product_id, product_name, product_amt from bidding.product_master where product_id =:product_id]]></db:sql>
 			<db:input-parameters ><![CDATA[#[{
@@ -62,5 +67,6 @@ output application/json
 payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<logger level="INFO" doc:name="End" doc:id="5d7cb42c-ce18-40a9-bf3e-7feeae3e492d" message="End - Get Products productId"/>
 	</flow>
 </mule>
