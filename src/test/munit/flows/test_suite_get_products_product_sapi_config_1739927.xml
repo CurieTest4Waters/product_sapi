@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="     http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd     http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd     http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd     http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+  <munit:config name="test_suite_get_products_product_sapi_config_1739927.xml"/>
+  <munit:test name="test_suite_get_products_product_sapi_config_0" description="Test the 'get:\products:product_sapi-config' flow to ensure it correctly retrieves product data from the database and transforms it into the required JSON format.">
+    <!-- Behavior section to set up test prerequisites -->
+    <munit:behavior>
+      <!-- Mock database select operation -->
+      <munit-tools:mock-when doc:name="Mock Database Select" processor="db:select">
+        <munit-tools:with-attributes>
+          <munit-tools:with-attribute whereValue="Select" attributeName="doc:name"/>
+          <munit-tools:with-attribute whereValue="Database_product_connection" attributeName="config-ref"/>
+        </munit-tools:with-attributes>
+        <munit-tools:then-return>
+          <munit-tools:payload value="#[MunitTools::getResourceAsString('test_suite_get_products_product_sapi_config_1739927/mock_data_scenario_0/db_products_response.json')]" mediaType="application/json" encoding="UTF-8"/>
+        </munit-tools:then-return>
+      </munit-tools:mock-when>
+    </munit:behavior>
+    <!-- Execute the flow -->
+    <munit:execution>
+      <flow-ref doc:name="Flow-ref to get:\products:product_sapi-config" name="get:\products:product_sapi-config"/>
+    </munit:execution>
+    <!-- Validate the results -->
+    <munit:validation>
+      <!-- Verify database select was called -->
+      <munit-tools:verify-call doc:name="Verify database select was called" processor="db:select">
+        <munit-tools:with-attributes>
+          <munit-tools:with-attribute whereValue="Select" attributeName="doc:name"/>
+        </munit-tools:with-attributes>
+      </munit-tools:verify-call>
+      <!-- Assert payload is not null and is an array -->
+      <munit-tools:assert-that doc:name="Assert payload is not null array" expression="#[payload is Array]" is="#[MunitTools::equalTo(true)]"/>
+      <!-- Assert each product has required fields -->
+      <munit-tools:assert-that doc:name="Assert products have required fields" expression="#[payload map ((item) -&gt; item.product_id? and item.product_name? and item.product_amt?) reduce ((item, acc = true) -&gt; item and acc)]" is="#[MunitTools::equalTo(true)]"/>
+    </munit:validation>
+  </munit:test>
+</mule>
